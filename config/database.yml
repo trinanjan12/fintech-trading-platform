@@ -3,13 +3,20 @@ production:
   host: trading-db-prod.company.com
   port: 5432
   database: trading_prod
-  pool_size: 15
-  timeout: 30
-  max_connections: 100
+  pool_size: 20  # Increased from 15 to handle APAC load
+  timeout: 45    # Increased from 30 for better stability
+  max_connections: 150  # Increased from 100
 
 staging:
   host: trading-db-staging.company.com
   port: 5432
   database: trading_staging
-  pool_size: 10
-  timeout: 20
+  pool_size: 15  # Increased from 10
+  timeout: 30    # Increased from 20
+
+# Connection pool monitoring
+monitoring:
+  enabled: true
+  alert_threshold: 0.8  # Alert when 80% of pool is used
+  log_slow_queries: true
+  slow_query_threshold: 2000  # 2 seconds
