@@ -1,0 +1,15 @@
+# Database configuration for trading platform
+production:
+  host: trading-db-prod.company.com
+  port: 5432
+  database: trading_prod
+  pool_size: 15
+  timeout: 30
+  max_connections: 100
+
+staging:
+  host: trading-db-staging.company.com
+  port: 5432
+  database: trading_staging
+  pool_size: 10
+  timeout: 20
