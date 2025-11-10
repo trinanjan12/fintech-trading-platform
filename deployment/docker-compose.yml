@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  trading-db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: trading_prod
+      POSTGRES_USER: trading_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - trading_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - trading-network
+
+  trading-app:
+    build: 
+      context: ../
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://trading_user:${DB_PASSWORD}@trading-db:5432/trading_prod
+      - REDIS_URL=redis://redis:6379
+    ports:
+      - "8080:8080"
+    depends_on:
+      - trading-db
+      - redis
+    networks:
+      - trading-network
+
+  redis:
+    image: redis:6-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - trading-network
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - trading-app
+    networks:
+      - trading-network
+
+volumes:
+  trading_data:
+
+networks:
+  trading-network:
+    driver: bridge
